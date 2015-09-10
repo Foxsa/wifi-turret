@@ -33,10 +33,10 @@ void loop() {
         cmd=inputString.substring(0, 2);
         param=inputString.substring(2, 5);
         if (cmd=="gy"){
-            Serial.println(cury);
+            Serial.print(cury);
         }
         else if (cmd=="gx"){
-            Serial.println(curx);
+            Serial.print(curx);
         }
         else if (cmd=="sy"){
             newy=param.toInt();
