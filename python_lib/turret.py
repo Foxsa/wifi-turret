@@ -1,5 +1,5 @@
 
-import serial,time
+import serial
 
 class MyTurret:
 	"""Wifi turret class"""
@@ -11,7 +11,9 @@ class MyTurret:
     				bytesize=serial.SEVENBITS,
 				timeout=timeout)
 		self.port.open()
-		time.sleep(2)
+		#self.port.write("test\n")
+		test=self.port.readline() #wait for initalizing
+		self.port.flushInput()
 
 	def __del__(self):
 		self.finish()
@@ -33,17 +35,11 @@ class MyTurret:
 
 	def gety(self):
 		self.port.write('gy\n')
-		time.sleep(1)
-		out=''
-		while self.port.inWaiting() > 0:
-			out += self.port.read(1)
-		return out
+		out=self.port.readline()
+		return int(out)
 	
 	def getx(self):
 		self.port.write('gx\n')
-		time.sleep(1)
-		out=''
-		while self.port.inWaiting() > 0:
-			out += self.port.read(1)
-		return out
+		out=self.port.readline()
+		return int(out)
 
