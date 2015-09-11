@@ -24,6 +24,7 @@ void setup() {
 
   Serial.begin(9600);
   inputString.reserve(200);
+  Serial.println("Controller initialized");
 
 }
 
@@ -33,16 +34,19 @@ void loop() {
         cmd=inputString.substring(0, 2);
         param=inputString.substring(2, 5);
         if (cmd=="gy"){
-            Serial.print(cury);
+            Serial.println(cury);
         }
         else if (cmd=="gx"){
-            Serial.print(curx);
+            Serial.println(curx);
         }
         else if (cmd=="sy"){
             newy=param.toInt();
         }
         else if (cmd=="sx"){
             newx=param.toInt();
+        }
+        else if (cmd=="test"){
+           Serial.println("OK");
         }
         else{
             Serial.println("commands: gx,gy,sx***,sy***");
