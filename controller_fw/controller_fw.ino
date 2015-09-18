@@ -45,7 +45,7 @@ void loop() {
         else if (cmd=="sx"){
             newx=param.toInt();
         }
-        else if (cmd=="test"){
+        else if (cmd=="te"){
            Serial.println("OK");
         }
         else{
