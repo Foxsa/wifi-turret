@@ -18,9 +18,7 @@ def median(lst):
 		return float(sum(lst[(len(lst)/2)-1:(len(lst)/2)+1]))/2.0
 
 def uniq(seq):
-    seen = set()
-    seen_add = seen.add
-    return [ x for x in seq if not (x in seen or seen_add(x))]
+	return list(set(seq))
 
 ##### Options #####
 parser = OptionParser()
@@ -50,22 +48,17 @@ measures_sleep=1
 turret=turret.MyTurret(tty)
 wifi=iwlibs.Wireless(iface)
 
-curx=startx
-
 sky={}
 all_aps=[]
 
 ### X azimut
-while True: 
-	if curx > finx: curx=finx
+for curx in range(startx,finx,delta)+[finx]:
 	sky[curx]={}
 	turret.setx(curx)
 	print 'x'+str(curx)
 
 ### Y Elevation
-	cury=starty
-	while True: 
-		if cury > finy: cury=finy
+	for cury in range(starty,finy,delta)+[finy]:
 		turret.sety(cury)
 		print 'y'+str(cury)
 		sky[curx][cury]={}
@@ -90,13 +83,7 @@ while True:
 				if ap in scan_results[m]:
 					power.append(scan_results[m][ap])
 			sky[curx][cury][ap]=median(power)
-		if cury==finy: break
-		cury += delta
-	## DEBUG
-	#break
 		
-	if curx==finx: break
-	curx += delta
 all_aps=uniq(all_aps)
 
 #print json.dumps(sky,sort_keys=True)
