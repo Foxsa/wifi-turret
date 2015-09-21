@@ -32,6 +32,9 @@ class MyTurret:
 			self.port.write('sx'+str(newx)+'\n')
 		else:
 			print "ERROR! X not in range 0..180 Not moving"
+	def aim(self,options):
+		self.setx(options['x'])
+		self.sety(options['y'])
 
 	def gety(self):
 		self.port.write('gy\n')
