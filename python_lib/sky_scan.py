@@ -21,21 +21,24 @@ def uniq(seq):
 	return list(set(seq))
 
 ##### Options #####
-parser = OptionParser()
-parser.add_option("-p", "--port",dest="tty",
-		help="Serial port of connected Arduino servo controller", metavar='tty')
-parser.add_option("-i", "--iface",dest="iface",
-		help="Interface that will be used for scanning", metavar='iface')
+parser = OptionParser(description="Program for scanning sky segment with turret device)")
+parser.add_option("-p", "--port",dest="tty",default="/dev/ttyUSB0",
+		help="Serial port of connected Arduino servo controller (default: /dev/ttyUSB0)", metavar='tty')
+parser.add_option("-i", "--iface",dest="iface",default="wlan0",
+		help="Interface that will be used for scanning (default: wlan0)", metavar='iface')
+parser.add_option("-v", "--verbose",action="store_true",
+		help="Increse verbosity")
+parser.add_option("-o", "--output",dest="output",
+		help="Write result in json file",metavar="FILE")
+
+
 ##mode: scan find
-##verbose
-##outfile
 ##starty, finy
 ##startx, finx
 ##delta
 
-##### defaults #####
-tty="/dev/ttyUSB0"
-iface="wlan0"
+##### options #####
+output="sky_scan.out"
 startx=0
 finx=180
 starty=0
@@ -44,9 +47,10 @@ delta=60
 num_measures=3
 measures_sleep=1
 
+### initialization ###
 (options, args) = parser.parse_args()
-turret=turret.MyTurret(tty)
-wifi=iwlibs.Wireless(iface)
+turret=turret.MyTurret(options.tty)
+wifi=iwlibs.Wireless(options.iface)
 
 sky={}
 all_aps=[]
@@ -55,12 +59,12 @@ all_aps=[]
 for curx in range(startx,finx,delta)+[finx]:
 	sky[curx]={}
 	turret.setx(curx)
-	print 'x'+str(curx)
+	if options.verbose: print 'Set X: '+str(curx)
 
 ### Y Elevation
 	for cury in range(starty,finy,delta)+[finy]:
 		turret.sety(cury)
-		print 'y'+str(cury)
+		if options.verbose: print 'Set Y: '+str(cury)
 		sky[curx][cury]={}
 		## scan
 		scan_results={}
@@ -86,9 +90,6 @@ for curx in range(startx,finx,delta)+[finx]:
 		
 all_aps=uniq(all_aps)
 
-#print json.dumps(sky,sort_keys=True)
-#print sky
-
 maximum={}
 for ap in all_aps:
 	maximum[ap]={}
@@ -102,4 +103,13 @@ for ap in all_aps:
 					maximum[ap]['y']=cy
 					maximum[ap]['level']=sky[cx][cy][ap]
 					maximum[ap]['dbm']=sky[cx][cy][ap]-256
-print maximum
+if options.verbose or not options.output: print maximum
+
+if options.output:
+	data={}
+	data['all_aps']=all_aps
+	data['sky']=sky
+	data['maximum']=maximum
+	
+	with open(options.output, 'w') as outfile:
+		json.dump(data, outfile,sort_keys=True)
