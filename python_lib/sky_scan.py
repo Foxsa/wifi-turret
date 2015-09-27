@@ -41,15 +41,17 @@ parser.add_option("-o", "--output",dest="output",
 output="sky_scan.out"
 startx=0
 finx=180
-starty=0
+starty=75
 finy=180
 delta=60
 num_measures=3
+invertx=False
+inverty=True
 measures_sleep=1
 
 ### initialization ###
 (options, args) = parser.parse_args()
-turret=turret.MyTurret(options.tty)
+turret=turret.MyTurret(tty=options.tty,invertx=invertx,inverty=inverty)
 wifi=iwlibs.Wireless(options.iface)
 
 sky={}
