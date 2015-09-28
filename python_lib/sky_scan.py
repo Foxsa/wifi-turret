@@ -40,10 +40,10 @@ parser.add_option("-o", "--output",dest="output",
 ##### options #####
 output="sky_scan.out"
 startx=0
-finx=180
+finx=90
 starty=75
-finy=180
-delta=60
+finy=160
+delta=30
 num_measures=3
 invertx=False
 inverty=True
@@ -56,6 +56,7 @@ wifi=iwlibs.Wireless(options.iface)
 
 sky={}
 all_aps=[]
+ap_names={}
 
 ### X azimut
 for curx in range(startx,finx,delta)+[finx]:
@@ -78,6 +79,7 @@ for curx in range(startx,finx,delta)+[finx]:
 				scan_results[m][i.bssid]=i.quality.siglevel
 				aps_bssid.append(i.bssid)
 				all_aps.append(i.bssid)
+				ap_names[i.bssid]=i.essid
 			time.sleep(measures_sleep)
 		aps_bssid=uniq(aps_bssid)
 	
@@ -110,6 +112,7 @@ if options.verbose or not options.output: print maximum
 if options.output:
 	data={}
 	data['all_aps']=all_aps
+	data['ap_names']=ap_names
 	data['sky']=sky
 	data['maximum']=maximum
 	
