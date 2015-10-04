@@ -24,23 +24,26 @@ class MyTurret:
 		self.port.close()
 
 	def invert(self,var):
-		return -1*(var-180)
+		return (180 - var)
 
 	def sety(self,newy):
+		newy = int(newy)
 		if self.inverty: 
 			newy=self.invert(newy)
-		if not (int(newy) < 0 or int(newy) > 180):
-			self.port.write('sy'+str(newy)+'\n')
+		if (0 <= newy <= 180):
+			self.port.write('sy{:d}\n'.format(newy))
 		else:
 			print "ERROR! Y not in range 0..180 Not moving"
 		
 	def setx(self,newx):
+		newx = int(newx)
 		if self.invertx: 
 			newy=self.invert(newx)
-		if not (int(newx) < 0 or int(newx) > 180):
-			self.port.write('sx'+str(newx)+'\n')
+		if (0 <= newx <= 180):
+			self.port.write('sx{:d}\n'.format(newx))
 		else:
 			print "ERROR! X not in range 0..180 Not moving"
+
 	def aim(self,options):
 		self.setx(options['x'])
 		self.sety(options['y'])
