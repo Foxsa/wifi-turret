@@ -24,7 +24,7 @@ void setup() {
 
   Serial.begin(9600);
   inputString.reserve(200);
-  Serial.println("Controller initialized");
+  //Serial.println("Controller initialized");
 
 }
 
