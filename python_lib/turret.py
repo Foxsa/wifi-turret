@@ -5,6 +5,7 @@ from time import sleep
 class MyTurret:
 	"""Wifi turret class"""
 	def __init__(self, tty='/dev/ttyUSB0', timeout=10, 
+			xlimits=[0, 180], ylimits=[0, 180],
 			invertx=False, inverty=False, 
 			step_deg=1, step_sec=0.05, 
 			debug=1):
@@ -23,6 +24,15 @@ class MyTurret:
 		self.invertx=invertx
 		self.step_deg = step_deg
 		self.step_sec = step_sec
+		for lim in (xlimits, ylimits):
+			if (not (isinstance(lim, (list, tuple)) and (len(lim) == 2) \
+					and all(isinstance(val, int) for val in lim))):
+				raise ValueError('Limit must be a list of two integers')
+			if (lim[0] < 0):
+				raise ValueError('Low limit cannot be less than 0')
+			if (lim[1] > 180):
+				raise ValueError('High limit cannot be more than 180')
+		self.limits = {'x': xlimits, 'y': ylimits}
 		# Set ping timeout as 1/5 of main timeout, 
 		# but not less than 1 sec.
 		# By default, 10/5 = 2 sec.
@@ -61,19 +71,23 @@ class MyTurret:
 		newy = int(newy)
 		if self.inverty: 
 			newy=self.invert(newy)
-		if (0 <= newy <= 180):
+		if (self.limits['y'][0] <= newy <= self.limits['y'][1]):
 			self.port.write('sy{:d}\n'.format(newy))
 		else:
-			print "ERROR! Y not in range 0..180 Not moving"
+			raise ValueError(('Cannot set y = {:d} because value ' + 
+				'is out of allowed range [{:d}:{:d}]').\
+				format(newy, self.limits['y'][0], self.limits['y'][1]))
 		
 	def setx(self,newx):
 		newx = int(newx)
 		if self.invertx: 
 			newy=self.invert(newx)
-		if (0 <= newx <= 180):
+		if (self.limits['x'][0] <= newx <= self.limits['x'][1]):
 			self.port.write('sx{:d}\n'.format(newx))
 		else:
-			print "ERROR! X not in range 0..180 Not moving"
+			raise ValueError(('Cannot set x = {:d} because value '
+				'is out of allowed range [{:d}:{:d}]').\
+				format(newx, self.limits['x'][0], self.limits['x'][1]))
 	
 	def slowly(self, coord, newval):
 		newval = int(newval)
